@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" type="text/css" href="index.css" />
+
+	<title></title>
+
+</head>
+<body>
+
+<!-- THE HTML PART -->
+<!-- Privacy Policy -->
+<div id="gtm-iframe-container" ></div>
+
+<div id="privacy-policy-dialog" class="privacy-policy-wrap d-d-none m-d-none" >
+	<p>
+		We use cookies to ensure that we give you the best experience on our website. If you continue to use this site we will assume that you are happy with it.
+		<br/><br/>
+	</p>
+	<div class="btn-wrap" >
+		<button class="accept-btn" onclick="handle_privacy('OK');" >Ok</button>
+		<button class="review-btn" onclick="handle_privacy();" >No</button>
+		<a href="/cookie-policy/" target="_blank" >Privacy Policy</a>
+	</div>
+</div>
+ <!-- end Privacy Policy -->
+
+
+<script type="text/javascript">
+
+
+function invokeGTM() {
+	var gtmID = "GTM-K2B6MW4";
+	(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+	j=d.createElement(s),dl=l!=='dataLayer'?'&l='+l:'';j.async=true;j.src=
+	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+	})(window,document,'script','dataLayer', gtmID);
+	console.log("GTM ID:", "GTM-K2B6MW4");
+}
+
+// Takes regex and removes that class from the element
+function removeClass(elementID, classToRemoveReg) {
+	var el = document.getElementById(elementID);
+	if(el !== null) {
+		el.className = el.className.replace(classToRemoveReg, "");
+	}
+}
+
+// Adds class to element if it doesn't exist
+function addClass(elementID, classToAdd) {
+	var el = document.getElementById(elementID);
+	if(el !== null) {
+		var all_classes = el.className.split(" ");
+		if (all_classes.indexOf(classToAdd) == -1) {
+			el.className += " " + classToAdd;
+		}
+	}
+}
+
+// Fire pixel directly
+function triggerPixels() {
+	// Get GTM ID from DOM
+	var	gtmID = "GTM-K2B6MW4";
+	invokeGTM();
+	
+	// Iframe
+	var gtmNoscript = document.createElement("noscript");
+	var gtmIframe = document.createElement("iframe");
+	var gtmSrc = "https://www.googletagmanager.com/ns.html?id=" + gtmID;
+	gtmIframe.setAttribute('src', gtmSrc);
+	gtmIframe.setAttribute('height', 0);
+	gtmIframe.setAttribute('width', 0);
+	gtmIframe.setAttribute('style', "display:none;visibility:hidden");
+	gtmNoscript.appendChild(gtmIframe);
+	document.getElementById('gtm-iframe-container').appendChild(gtmNoscript);
+}
+
+// Hides the Privacy policy dialog - on Mobile and Desktop
+function hidePrivacyDialog() {
+	addClass("privacy-policy-dialog", "m-d-none");
+	addClass("privacy-policy-dialog", "d-d-none");
+	localStorage.setItem("PRIVACY_POLICY_ACCEPTED", true);
+}
+
+// Privacy policy was accepted
+function handle_privacy(status) {
+	if(status === "OK") {
+		triggerPixels();
+	}
+	hidePrivacyDialog();
+}
+
+/* The flow script */
+// Display the privacy policy dialog
+function showPrivacyDialog() {
+	removeClass("privacy-policy-dialog", /\bm-d-none\b/g);
+	removeClass("privacy-policy-dialog", /\bd-d-none\b/g);
+}
+
+// Show the dialog - start the module
+function executePrivacyPolicy() {
+	if(localStorage.getItem("PRIVACY_POLICY_ACCEPTED") === null) {
+		// Privacy policy is not already accepted
+		showPrivacyDialog();
+	} else {
+		// Privacy policy is already accepted
+		triggerPixels();
+	}
+}
+executePrivacyPolicy();
+/* end The flow script */
+
+/* Fire pixel on registration */
+function isFormValid() {
+	let nameInp = document.querySelector("[name='webform[name]']");
+	let emailInp = document.querySelector("[name='webform[email]']");
+	let reconfirmEmailInp = document.querySelector("[name='webform[reconfirm_email_address]']");	
+	let cityInp = document.querySelector("[name='webform[city]']");
+
+	// Checking if all elements exist
+	if(nameInp !== null && emailInp !== null && reconfirmEmailInp !== null && cityInp !== null) {
+		// Check if they are empty
+		if(nameInp.value !== '' && emailInp.value !== '' && reconfirmEmailInp.value !== '' && cityInp.value !== '') {
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		// All elements do not exist
+		return false;
+	}
+}
+
+let formEl = document.querySelector("#webform_preview form");
+if(formEl !== null) {
+	formEl.onsubmit = function() {
+
+		if(isFormValid() === true) {
+
+			/* The checkbox must be accepted */
+			let legalCb = document.querySelector("#webform_preview form input[type='checkbox']");
+			if(legalCb !== null && legalCb.checked === true) {
+				triggerPixels();
+			}
+		}
+	};
+}
+/* end Fire pixel on registration */
+</script>
+<!-- end THE HTML PART -->
+
+</body>
+</html>
